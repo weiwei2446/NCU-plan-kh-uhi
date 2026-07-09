@@ -6,7 +6,7 @@
 
 網站使用 ArcGIS Maps SDK for JavaScript 顯示高雄市的都市熱島、NDVI、綠覆蓋率、建物密度與行政區平均溫度等圖層。左側面板提供自訂圖層控制，可開關圖層並即時調整透明度；地圖右下角提供圖例，FeatureLayer 可點擊顯示 popup 屬性資料。
 
-熱島與綠覆蓋圖層使用 `EPSG:32650` 的 ArcGIS tile cache。一般 OpenStreetMap tiled basemap 使用 Web Mercator，無法與這批 tile cache 直接疊合，因此目前以圖層本身座標系顯示專題資料，並保留 `ground: "world-elevation"` 供 3D 模式使用。
+熱島與綠覆蓋圖層使用 `EPSG:32650` 的 ArcGIS tile cache。一般 OpenStreetMap tiled basemap 使用 Web Mercator，無法與這批 tile cache 直接疊合。為了讓專題圖層正確顯示，地圖 view 使用 `EPSG:32650`，底圖則使用可動態輸出到此座標系的 Esri Light Gray MapServer，並保留 `ground: "world-elevation"` 供 3D 模式使用。
 
 目前「都市熱島分級圖」與「建物密度圖」的 URL 尚未製作，因此程式會在 console 顯示警告並略過該圖層。日後補上有效 ArcGIS REST URL 後，控制列會自動啟用。
 

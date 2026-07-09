@@ -42,6 +42,8 @@ require([
   };
   const projectedScale = 576592.7163250436;
   const viewDivId = "viewDiv";
+  const lightGrayBaseUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer";
+  const lightGrayReferenceUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer";
 
   // 如果 ArcGIS Online 的欄位名稱不同，只要修改這個欄位對應區即可。
   const fields = {
@@ -117,6 +119,22 @@ require([
     ground: "world-elevation"
   });
 
+  const lightGrayBaseLayer = new MapImageLayer({
+    title: "淺灰底圖",
+    url: lightGrayBaseUrl,
+    opacity: 1,
+    legendEnabled: false,
+    listMode: "hide"
+  });
+
+  const lightGrayReferenceLayer = new MapImageLayer({
+    title: "淺灰底圖標註",
+    url: lightGrayReferenceUrl,
+    opacity: 0.85,
+    legendEnabled: false,
+    listMode: "hide"
+  });
+
   const layerRegistry = new Map();
   let currentView = null;
   let mapView = null;
@@ -139,6 +157,8 @@ require([
 
   function initializeLayers() {
     const operationalLayers = [];
+
+    map.add(lightGrayBaseLayer);
 
     layerConfigs.forEach((config) => {
       const layer = createLayerFromUrl(config);
@@ -163,6 +183,17 @@ require([
     });
 
     map.addMany(operationalLayers);
+    map.add(lightGrayReferenceLayer);
+    watchBaseLayerLoad(lightGrayBaseLayer);
+    watchBaseLayerLoad(lightGrayReferenceLayer);
+  }
+
+  function watchBaseLayerLoad(layer) {
+    layer.when(() => {
+      console.log(`${layer.title} 載入成功`);
+    }).catch((error) => {
+      console.error(`${layer.title} 載入失敗`, error);
+    });
   }
 
   function createLayerFromUrl(config) {
