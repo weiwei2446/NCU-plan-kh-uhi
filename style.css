@@ -1,0 +1,253 @@
+html,
+body,
+#viewDiv {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+  color: #17202a;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+  background: #eef2f5;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+#viewDiv {
+  position: fixed;
+  inset: 0;
+}
+
+#infoPanel {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 10;
+  width: 320px;
+  max-height: calc(100vh - 36px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 18px;
+  border: 1px solid rgba(29, 42, 54, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 40px rgba(23, 32, 42, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+#infoPanel h1 {
+  margin: 0 0 10px;
+  color: #12313f;
+  font-size: 22px;
+  line-height: 1.28;
+  font-weight: 700;
+}
+
+#infoPanel p {
+  margin: 0 0 16px;
+  color: #4d5b66;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+#viewModeControl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#viewModeControl button {
+  min-height: 40px;
+  border: 1px solid #b8c4ce;
+  border-radius: 6px;
+  color: #27404f;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+#viewModeControl button:hover {
+  border-color: #2f7f8f;
+}
+
+#viewModeControl button.active {
+  border-color: #1f6f7f;
+  color: #ffffff;
+  background: #1f6f7f;
+  font-weight: 700;
+}
+
+#viewModeControl button:disabled {
+  opacity: 0.58;
+  cursor: wait;
+}
+
+#viewStatus {
+  display: none;
+  margin: 0 0 12px;
+  padding: 9px 10px;
+  border-left: 4px solid #c54d2f;
+  border-radius: 6px;
+  color: #6b2a19;
+  background: #fff3ee;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+#viewStatus.visible {
+  display: block;
+}
+
+.panelSection {
+  margin-top: 12px;
+}
+
+.panelSection h2 {
+  margin: 0 0 10px;
+  color: #22313a;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+#layerControls {
+  display: grid;
+  gap: 12px;
+}
+
+.layerControl {
+  padding: 12px;
+  border: 1px solid #dde4ea;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.layerControl.unavailable {
+  opacity: 0.68;
+}
+
+.layerHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.layerHeader input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: #1f6f7f;
+}
+
+.layerTitle {
+  display: block;
+  color: #24333d;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.layerPurpose {
+  display: block;
+  margin-top: 2px;
+  color: #6a7882;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.layerUnavailableText {
+  display: block;
+  margin-top: 4px;
+  color: #9a4c2e;
+  font-size: 12px;
+}
+
+.opacityControl {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #52616c;
+  font-size: 12px;
+}
+
+.opacityControl input[type="range"] {
+  width: 100%;
+  accent-color: #c54d2f;
+}
+
+.opacityValue {
+  min-width: 36px;
+  color: #2b3d48;
+  text-align: right;
+}
+
+.esri-ui .esri-widget {
+  font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+}
+
+.popupTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+  font-size: 13px;
+}
+
+.popupTable th,
+.popupTable td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #e5ebef;
+  text-align: left;
+  vertical-align: top;
+}
+
+.popupTable th {
+  width: 42%;
+  color: #40515e;
+  font-weight: 700;
+  background: #f5f8fa;
+}
+
+@media (max-width: 720px) {
+  #infoPanel {
+    top: 10px;
+    left: 10px;
+    width: min(340px, calc(100vw - 20px));
+    max-height: 48vh;
+    padding: 14px;
+  }
+
+  #infoPanel h1 {
+    font-size: 19px;
+  }
+
+  #infoPanel p {
+    font-size: 13px;
+  }
+
+  #viewModeControl button {
+    min-height: 38px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  #infoPanel {
+    max-height: 52vh;
+  }
+
+  .opacityControl {
+    grid-template-columns: 1fr auto;
+  }
+
+  .opacityControl label {
+    grid-column: 1 / -1;
+  }
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高雄市都市熱島效應互動地圖</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="viewDiv" aria-label="高雄市都市熱島效應互動地圖"></div>
+
+  <aside id="infoPanel" aria-label="圖層與地圖模式控制">
+    <h1>高雄市都市熱島效應地圖</h1>
+    <p>本網站展示高雄市地表溫度、都市熱島強度、NDVI、綠覆蓋率與建物密度等圖層。</p>
+
+    <div id="viewModeControl" aria-label="2D 與 3D 地圖切換">
+      <button id="switch2D" class="active" type="button">2D 平面地圖</button>
+      <button id="switch3D" type="button">3D 地圖</button>
+    </div>
+
+    <div id="viewStatus" role="status" aria-live="polite"></div>
+
+    <section class="panelSection" aria-labelledby="layerControlsTitle">
+      <h2 id="layerControlsTitle">圖層控制</h2>
+      <div id="layerControls"></div>
+    </section>
+  </aside>
+
+  <script src="https://js.arcgis.com/4.33/"></script>
+  <script src="main.js"></script>
+</body>
+</html>
