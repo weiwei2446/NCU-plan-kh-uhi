@@ -5,6 +5,7 @@ require([
   "esri/layers/TileLayer",
   "esri/layers/FeatureLayer",
   "esri/layers/ImageryLayer",
+  "esri/layers/MapImageLayer",
   "esri/widgets/Legend",
   "esri/widgets/Expand",
   "esri/widgets/Home",
@@ -18,6 +19,7 @@ require([
   TileLayer,
   FeatureLayer,
   ImageryLayer,
+  MapImageLayer,
   Legend,
   Expand,
   Home,
@@ -96,7 +98,7 @@ require([
   ];
 
   const map = new ArcGISMap({
-    basemap: "gray-vector",
+    basemap: "osm",
     ground: "world-elevation"
   });
 
@@ -135,11 +137,7 @@ require([
         return;
       }
 
-      layer.when(() => {
-        console.log(`${layer.title} 載入成功`);
-      }).catch((error) => {
-        console.error(`${layer.title} 載入失敗`, error);
-      });
+      watchLayerLoad(layer, config);
 
       operationalLayers.push(layer);
       layerRegistry.set(config.id, {
@@ -164,7 +162,9 @@ require([
       title: config.title,
       url: normalizeLayerUrl(rawUrl),
       visible: config.visible,
-      opacity: config.opacity
+      opacity: config.opacity,
+      minScale: 0,
+      maxScale: 0
     };
 
     if (/FeatureServer/i.test(rawUrl)) {
@@ -180,11 +180,66 @@ require([
     }
 
     if (/MapServer/i.test(rawUrl)) {
-      return new TileLayer(commonOptions);
+      return new TileLayer({
+        ...commonOptions,
+        customParameters: {
+          cacheHint: true
+        }
+      });
     }
 
     console.warn(`${config.title} 的 URL 無法判斷圖層類型，已略過。URL: ${rawUrl}`);
     return null;
+  }
+
+  function watchLayerLoad(layer, config) {
+    layer.when(() => {
+      console.log(`${layer.title} 載入成功`);
+    }).catch((error) => {
+      console.error(`${layer.title} 載入失敗`, error);
+
+      if (/MapServer/i.test(config.url || "") && layer.declaredClass !== "esri.layers.MapImageLayer") {
+        replaceFailedMapServerLayer(config, layer);
+      }
+    });
+  }
+
+  function replaceFailedMapServerLayer(config, failedLayer) {
+    const rawUrl = typeof config.url === "string" ? config.url.trim() : "";
+
+    if (!rawUrl || !/MapServer/i.test(rawUrl)) {
+      return;
+    }
+
+    const fallbackLayer = new MapImageLayer({
+      title: config.title,
+      url: normalizeLayerUrl(rawUrl),
+      visible: failedLayer.visible,
+      opacity: failedLayer.opacity,
+      minScale: 0,
+      maxScale: 0
+    });
+
+    const layerIndex = map.layers.indexOf(failedLayer);
+    map.remove(failedLayer);
+
+    if (layerIndex >= 0) {
+      map.add(fallbackLayer, layerIndex);
+    } else {
+      map.add(fallbackLayer);
+    }
+
+    layerRegistry.set(config.id, {
+      config: config,
+      layer: fallbackLayer,
+      available: true
+    });
+
+    fallbackLayer.when(() => {
+      console.log(`${fallbackLayer.title} 已改用 MapImageLayer 載入成功`);
+    }).catch((fallbackError) => {
+      console.error(`${fallbackLayer.title} 改用 MapImageLayer 後仍載入失敗`, fallbackError);
+    });
   }
 
   function normalizeLayerUrl(url) {
