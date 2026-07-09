@@ -96,7 +96,7 @@ require([
   ];
 
   const map = new ArcGISMap({
-    basemap: "satellite",
+    basemap: "gray-vector",
     ground: "world-elevation"
   });
 
@@ -135,8 +135,10 @@ require([
         return;
       }
 
-      layer.when().catch((error) => {
-        console.error(`${config.title} 載入失敗`, error);
+      layer.when(() => {
+        console.log(`${layer.title} 載入成功`);
+      }).catch((error) => {
+        console.error(`${layer.title} 載入失敗`, error);
       });
 
       operationalLayers.push(layer);
@@ -385,17 +387,32 @@ require([
 
     if (layer) {
       checkbox.addEventListener("change", () => {
-        layer.visible = checkbox.checked;
+        const targetLayer = getLayerById(config.id);
+        if (!targetLayer) {
+          return;
+        }
+
+        targetLayer.visible = checkbox.checked;
       });
 
       slider.addEventListener("input", () => {
+        const targetLayer = getLayerById(config.id);
+        if (!targetLayer) {
+          return;
+        }
+
         const value = Number(slider.value);
-        layer.opacity = value;
+        targetLayer.opacity = value;
         opacityValue.textContent = `${Math.round(value * 100)}%`;
       });
     }
 
     return wrapper;
+  }
+
+  function getLayerById(id) {
+    const registryItem = layerRegistry.get(id);
+    return registryItem && registryItem.layer ? registryItem.layer : null;
   }
 
   function initialize2DView(options) {
