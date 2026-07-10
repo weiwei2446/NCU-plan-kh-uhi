@@ -6,6 +6,8 @@ require([
   "esri/layers/FeatureLayer",
   "esri/layers/ImageryLayer",
   "esri/layers/MapImageLayer",
+  "esri/layers/WebTileLayer",
+  "esri/Basemap",
   "esri/widgets/Legend",
   "esri/widgets/Expand",
   "esri/widgets/Home",
@@ -20,6 +22,8 @@ require([
   FeatureLayer,
   ImageryLayer,
   MapImageLayer,
+  WebTileLayer,
+  Basemap,
   Legend,
   Expand,
   Home,
@@ -105,8 +109,21 @@ require([
     }
   ];
 
+  const openStreetMapLayer = new WebTileLayer({
+    title: "OpenStreetMap",
+    urlTemplate: "https://{subDomain}.tile.openstreetmap.org/{level}/{col}/{row}.png",
+    subDomains: ["a", "b", "c"],
+    copyright: "© OpenStreetMap contributors"
+  });
+
+  const openStreetMapBasemap = new Basemap({
+    baseLayers: [openStreetMapLayer],
+    title: "OpenStreetMap",
+    id: "openstreetmap-custom"
+  });
+
   const map = new ArcGISMap({
-    basemap: "osm",
+    basemap: openStreetMapBasemap,
     ground: "world-elevation"
   });
 
@@ -125,10 +142,19 @@ require([
 
   initializeLayers();
   initializeLayerControls();
+  watchOpenStreetMapLoad();
   initialize2DView();
 
   switch2DButton.addEventListener("click", switchTo2D);
   switch3DButton.addEventListener("click", switchTo3D);
+
+  function watchOpenStreetMapLoad() {
+    openStreetMapLayer.when(() => {
+      console.log("OpenStreetMap 底圖載入成功");
+    }).catch((error) => {
+      console.error("OpenStreetMap 底圖載入失敗", error);
+    });
+  }
 
   function initializeLayers() {
     const operationalLayers = [];
