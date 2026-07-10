@@ -28,12 +28,14 @@ require([
   ScaleBar
 ) {
   const kaohsiungCenter = [120.65, 22.75];
-  const kaohsiungProjectedCenter = {
-    x: 838800,
-    y: 2504000,
-    spatialReference: { wkid: 32650 }
+  const taiwanViewExtent = {
+    type: "extent",
+    xmin: 119.8,
+    ymin: 21.7,
+    xmax: 122.2,
+    ymax: 25.5,
+    spatialReference: { wkid: 4326 }
   };
-  const projectedScale = 576592.7163250436;
   const viewDivId = "viewDiv";
 
   // 如果 ArcGIS Online 的欄位名稱不同，只要修改這個欄位對應區即可。
@@ -104,7 +106,7 @@ require([
   ];
 
   const map = new ArcGISMap({
-    basemap: null,
+    basemap: "osm",
     ground: "world-elevation"
   });
 
@@ -480,13 +482,12 @@ require([
     mapView = new MapView({
       container: viewDivId,
       map: map,
-      spatialReference: { wkid: 32650 },
-      center: options && options.center ? options.center : kaohsiungProjectedCenter,
-      scale: options && options.scale ? options.scale : projectedScale,
+      center: options && options.center ? options.center : kaohsiungCenter,
+      zoom: options && options.zoom ? options.zoom : 10,
       constraints: {
-        minScale: 2306370.8653001743,
-        maxScale: 36037.044770315224,
-        snapToZoom: false
+        minZoom: 7,
+        maxZoom: 18,
+        geometry: taiwanViewExtent
       }
     });
 
@@ -509,12 +510,10 @@ require([
       map: map,
       qualityProfile: "medium",
       viewingMode: "local",
-      spatialReference: { wkid: 32650 },
       camera: options && options.camera ? options.camera : {
         position: {
-          x: kaohsiungProjectedCenter.x,
-          y: kaohsiungProjectedCenter.y,
-          spatialReference: { wkid: 32650 },
+          longitude: kaohsiungCenter[0],
+          latitude: kaohsiungCenter[1],
           z: 55000
         },
         tilt: 55,
@@ -556,9 +555,8 @@ require([
       const targetCenter = getViewpointCenter(savedViewpoint);
       const camera = targetCenter ? {
         position: {
-          x: targetCenter[0],
-          y: targetCenter[1],
-          spatialReference: { wkid: 32650 },
+          longitude: targetCenter[0],
+          latitude: targetCenter[1],
           z: 55000
         },
         tilt: 55,
@@ -585,21 +583,21 @@ require([
     setSwitchingState(true);
 
     try {
-      let center = kaohsiungProjectedCenter;
-      let scale = projectedScale;
+      let center = kaohsiungCenter;
+      let zoom = 10;
 
       if (currentView) {
         if (currentView.center) {
-          center = currentView.center.clone ? currentView.center.clone() : currentView.center;
+          center = [currentView.center.longitude, currentView.center.latitude];
         }
-        if (currentView.scale && Number.isFinite(currentView.scale)) {
-          scale = currentView.scale;
+        if (currentView.zoom && Number.isFinite(currentView.zoom)) {
+          zoom = Math.round(currentView.zoom);
         }
         savedViewpoint = currentView.viewpoint ? currentView.viewpoint.clone() : null;
         destroyCurrentView();
       }
 
-      const view = initialize2DView({ center: center, scale: scale });
+      const view = initialize2DView({ center: center, zoom: zoom });
       await view.when();
     } catch (error) {
       console.error("切換至 2D 模式失敗", error);
@@ -698,12 +696,12 @@ require([
     const geometry = viewpoint.targetGeometry;
     const center = geometry.extent ? geometry.extent.center : geometry;
 
-    if (center && Number.isFinite(center.x) && Number.isFinite(center.y)) {
-      return [center.x, center.y];
-    }
-
     if (center && Number.isFinite(center.longitude) && Number.isFinite(center.latitude)) {
       return [center.longitude, center.latitude];
+    }
+
+    if (center && Number.isFinite(center.x) && Number.isFinite(center.y)) {
+      return [center.x, center.y];
     }
 
     return null;
