@@ -33,17 +33,8 @@ require([
     y: 2504000,
     spatialReference: { wkid: 32650 }
   };
-  const kaohsiungProjectedExtent = {
-    xmin: 669585,
-    ymin: 2442885,
-    xmax: 894315,
-    ymax: 2601585,
-    spatialReference: { wkid: 32650 }
-  };
   const projectedScale = 576592.7163250436;
   const viewDivId = "viewDiv";
-  const lightGrayBaseUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer";
-  const lightGrayReferenceUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer";
 
   // 如果 ArcGIS Online 的欄位名稱不同，只要修改這個欄位對應區即可。
   const fields = {
@@ -72,7 +63,7 @@ require([
       id: "uhiIntensity",
       title: "都市熱島強度圖",
       purpose: "顯示熱島強弱連續分布",
-      url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/%E9%AB%98%E9%9B%84%E9%83%BD%E5%B8%82%E7%86%B1%E5%B3%B6%E5%9C%96/MapServer",
+      url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/kaohsiung_heat_island/MapServer",
       visible: false,
       opacity: 0.65
     },
@@ -80,7 +71,7 @@ require([
       id: "ndvi",
       title: "NDVI 植被指數圖",
       purpose: "顯示植被分布",
-      url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/Kaohsiung_NDVI/MapServer",
+      url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/Kaohsiung_NDVI_3857/MapServer",
       visible: false,
       opacity: 0.65
     },
@@ -88,7 +79,7 @@ require([
       id: "greenCoverage",
       title: "綠覆蓋率圖",
       purpose: "顯示高雄市綠覆蓋率",
-      url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/%E9%AB%98%E9%9B%84%E6%A4%8D%E6%8A%AB%E8%A6%86%E8%93%8B/MapServer",
+      url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/Green_cover3857/MapServer",
       visible: false,
       opacity: 0.65
     },
@@ -113,26 +104,8 @@ require([
   ];
 
   const map = new ArcGISMap({
-    // The heat-island and green-coverage tile caches use EPSG:32650.
-    // Web Mercator basemaps, including ArcGIS/OSM tiled basemaps, are not compatible with these cached tiles.
     basemap: null,
     ground: "world-elevation"
-  });
-
-  const lightGrayBaseLayer = new MapImageLayer({
-    title: "淺灰底圖",
-    url: lightGrayBaseUrl,
-    opacity: 1,
-    legendEnabled: false,
-    listMode: "hide"
-  });
-
-  const lightGrayReferenceLayer = new MapImageLayer({
-    title: "淺灰底圖標註",
-    url: lightGrayReferenceUrl,
-    opacity: 0.85,
-    legendEnabled: false,
-    listMode: "hide"
   });
 
   const layerRegistry = new Map();
@@ -158,8 +131,6 @@ require([
   function initializeLayers() {
     const operationalLayers = [];
 
-    map.add(lightGrayBaseLayer);
-
     layerConfigs.forEach((config) => {
       const layer = createLayerFromUrl(config);
 
@@ -183,17 +154,6 @@ require([
     });
 
     map.addMany(operationalLayers);
-    map.add(lightGrayReferenceLayer);
-    watchBaseLayerLoad(lightGrayBaseLayer);
-    watchBaseLayerLoad(lightGrayReferenceLayer);
-  }
-
-  function watchBaseLayerLoad(layer) {
-    layer.when(() => {
-      console.log(`${layer.title} 載入成功`);
-    }).catch((error) => {
-      console.error(`${layer.title} 載入失敗`, error);
-    });
   }
 
   function createLayerFromUrl(config) {
