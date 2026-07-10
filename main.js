@@ -31,7 +31,8 @@ require([
   Compass,
   ScaleBar
 ) {
-  const kaohsiungCenter = [120.65, 22.75];
+  const kaohsiungCenter = [120.38, 22.82];
+  const defaultZoom = 9;
   const taiwanViewExtent = {
     type: "extent",
     xmin: 119.8,
@@ -79,7 +80,7 @@ require([
       purpose: "顯示植被分布",
       url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/Kaohsiung_NDVI_3857/MapServer",
       visible: false,
-      opacity: 0.65
+      opacity: 0.85
     },
     {
       id: "greenCoverage",
@@ -87,7 +88,7 @@ require([
       purpose: "顯示高雄市綠覆蓋率",
       url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/Green_cover3857/MapServer",
       visible: false,
-      opacity: 0.65
+      opacity: 0.85
     },
     {
       id: "buildingDensity",
@@ -509,7 +510,7 @@ require([
       container: viewDivId,
       map: map,
       center: options && options.center ? options.center : kaohsiungCenter,
-      zoom: options && options.zoom ? options.zoom : 10,
+      zoom: options && options.zoom ? options.zoom : defaultZoom,
       constraints: {
         minZoom: 7,
         maxZoom: 18,
@@ -610,7 +611,7 @@ require([
 
     try {
       let center = kaohsiungCenter;
-      let zoom = 10;
+      let zoom = defaultZoom;
 
       if (currentView) {
         if (currentView.center) {

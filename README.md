@@ -6,7 +6,7 @@
 
 網站使用 ArcGIS Maps SDK for JavaScript 顯示高雄市的都市熱島、NDVI、綠覆蓋率、建物密度與行政區平均溫度等圖層。左側面板提供自訂圖層控制，可開關圖層並即時調整透明度；地圖右下角提供圖例，FeatureLayer 可點擊顯示 popup 屬性資料。
 
-熱島強度、NDVI 與綠覆蓋圖層已更新為新的服務 URL。網站底圖使用 OpenStreetMap `WebTileLayer`，地圖初始視角聚焦高雄，並透過 `MapView.constraints` 將可瀏覽範圍限制在台灣附近，避免使用者滑到太遠的區域。
+熱島強度、NDVI 與綠覆蓋圖層已更新為新的服務 URL。網站底圖使用 OpenStreetMap `WebTileLayer`，地圖初始視角聚焦高雄西側與台南交界附近，方便看見綠覆蓋與 NDVI 的有效資料範圍，並透過 `MapView.constraints` 將可瀏覽範圍限制在台灣附近，避免使用者滑到太遠的區域。
 
 目前「都市熱島分級圖」與「建物密度圖」的 URL 尚未製作，因此程式會在 console 顯示警告並略過該圖層。日後補上有效 ArcGIS REST URL 後，控制列會自動啟用。
 
