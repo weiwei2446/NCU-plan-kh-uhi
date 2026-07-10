@@ -5,7 +5,6 @@ require([
   "esri/layers/TileLayer",
   "esri/layers/FeatureLayer",
   "esri/layers/ImageryLayer",
-  "esri/layers/MapImageLayer",
   "esri/layers/WebTileLayer",
   "esri/Basemap",
   "esri/widgets/Legend",
@@ -21,7 +20,6 @@ require([
   TileLayer,
   FeatureLayer,
   ImageryLayer,
-  MapImageLayer,
   WebTileLayer,
   Basemap,
   Legend,
@@ -232,48 +230,6 @@ require([
       console.log(`${layer.title} 載入成功`);
     }).catch((error) => {
       console.error(`${layer.title} 載入失敗`, error);
-
-      if (/MapServer/i.test(config.url || "") && layer.declaredClass !== "esri.layers.MapImageLayer") {
-        replaceFailedMapServerLayer(config, layer);
-      }
-    });
-  }
-
-  function replaceFailedMapServerLayer(config, failedLayer) {
-    const rawUrl = typeof config.url === "string" ? config.url.trim() : "";
-
-    if (!rawUrl || !/MapServer/i.test(rawUrl)) {
-      return;
-    }
-
-    const fallbackLayer = new MapImageLayer({
-      title: config.title,
-      url: normalizeLayerUrl(rawUrl),
-      visible: failedLayer.visible,
-      opacity: failedLayer.opacity,
-      minScale: 0,
-      maxScale: 0
-    });
-
-    const layerIndex = map.layers.indexOf(failedLayer);
-    map.remove(failedLayer);
-
-    if (layerIndex >= 0) {
-      map.add(fallbackLayer, layerIndex);
-    } else {
-      map.add(fallbackLayer);
-    }
-
-    layerRegistry.set(config.id, {
-      config: config,
-      layer: fallbackLayer,
-      available: true
-    });
-
-    fallbackLayer.when(() => {
-      console.log(`${fallbackLayer.title} 已改用 MapImageLayer 載入成功`);
-    }).catch((fallbackError) => {
-      console.error(`${fallbackLayer.title} 改用 MapImageLayer 後仍載入失敗`, fallbackError);
     });
   }
 
