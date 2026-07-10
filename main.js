@@ -78,7 +78,8 @@ require([
       purpose: "顯示植被分布",
       url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/Kaohsiung_NDVI_3857/MapServer",
       visible: false,
-      opacity: 0.85
+      opacity: 0.85,
+      customLegend: "ndvi"
     },
     {
       id: "greenCoverage",
@@ -86,7 +87,8 @@ require([
       purpose: "顯示高雄市綠覆蓋率",
       url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/Green_cover3857/MapServer",
       visible: false,
-      opacity: 0.85
+      opacity: 0.85,
+      customLegend: "greenCoverage"
     },
     {
       id: "buildingDensity",
@@ -196,6 +198,7 @@ require([
       url: normalizeLayerUrl(rawUrl),
       visible: config.visible,
       opacity: config.opacity,
+      legendEnabled: !config.customLegend,
       minScale: 0,
       maxScale: 0
     };
@@ -439,6 +442,7 @@ require([
         }
 
         targetLayer.visible = checkbox.checked;
+        updateCustomLegendVisibility();
       });
 
       slider.addEventListener("input", () => {
@@ -620,10 +624,21 @@ require([
 
     const home = new Home({ view: view });
     const fullscreen = new Fullscreen({ view: view });
-    const legend = new Legend({ view: view });
+    const legendContent = document.createElement("div");
+    legendContent.className = "mapLegendContent";
+
+    const nativeLegendContainer = document.createElement("div");
+    nativeLegendContainer.className = "nativeLegendContainer";
+    legendContent.appendChild(nativeLegendContainer);
+    legendContent.appendChild(createCustomLegend());
+
+    const legend = new Legend({
+      view: view,
+      container: nativeLegendContainer
+    });
     const legendExpand = new Expand({
       view: view,
-      content: legend,
+      content: legendContent,
       expanded: false,
       expandIcon: "legend",
       expandTooltip: "顯示圖例"
@@ -633,6 +648,7 @@ require([
     view.ui.add(legendExpand, "bottom-right");
 
     currentWidgets = [home, fullscreen, legend, legendExpand];
+    updateCustomLegendVisibility();
 
     if (mode === "3d") {
       const compass = new Compass({ view: view });
@@ -648,6 +664,54 @@ require([
       view.ui.add(scaleBar, "bottom-left");
       currentWidgets.push(scaleBar);
     }
+  }
+
+  function createCustomLegend() {
+    const customLegend = document.createElement("div");
+    customLegend.id = "customMapLegend";
+    customLegend.className = "customMapLegend";
+    customLegend.innerHTML = `
+      <section class="customLegendSection" data-layer-id="ndvi">
+        <h3>NDVI 植被指數圖</h3>
+        <p class="customLegendServiceName">Kaohsiung_NDVI_3857</p>
+        <p class="customLegendHeading">NDVI值</p>
+        <div class="ndviLegendScale" aria-label="NDVI 值從 1 到負 1">
+          <span class="ndviLegendGradient" aria-hidden="true"></span>
+          <span class="ndviLegendMaximum">1（高植被密度）</span>
+          <span class="ndviLegendMinimum">-1</span>
+        </div>
+      </section>
+      <section class="customLegendSection" data-layer-id="greenCoverage">
+        <h3>綠覆蓋率圖</h3>
+        <p class="customLegendServiceName">Green_cover3857</p>
+        <p class="customLegendHeading">Value</p>
+        <div class="categoryLegendRow">
+          <span class="categoryLegendSwatch greenCoverageZero" aria-hidden="true"></span>
+          <span>0</span>
+        </div>
+        <div class="categoryLegendRow">
+          <span class="categoryLegendSwatch greenCoverageOne" aria-hidden="true"></span>
+          <span>1</span>
+        </div>
+      </section>
+    `;
+    return customLegend;
+  }
+
+  function updateCustomLegendVisibility() {
+    const customLegend = document.getElementById("customMapLegend");
+    if (!customLegend) {
+      return;
+    }
+
+    let hasVisibleSection = false;
+    customLegend.querySelectorAll("[data-layer-id]").forEach((section) => {
+      const layer = getLayerById(section.dataset.layerId);
+      const isVisible = Boolean(layer && layer.visible);
+      section.hidden = !isVisible;
+      hasVisibleSection = hasVisibleSection || isVisible;
+    });
+    customLegend.hidden = !hasVisibleSection;
   }
 
   function setActiveMode(mode) {

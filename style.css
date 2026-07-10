@@ -193,6 +193,114 @@ input {
   font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
 }
 
+.mapLegendContent {
+  width: 320px;
+  max-width: calc(100vw - 80px);
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #fff;
+}
+
+.nativeLegendContainer .esri-legend {
+  width: 100%;
+  min-width: 0;
+}
+
+.nativeLegendContainer:empty {
+  display: none;
+}
+
+.customMapLegend {
+  color: #323232;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
+}
+
+.customLegendSection {
+  padding: 14px 16px 16px;
+  border-top: 1px solid #d9d9d9;
+}
+
+.customLegendSection:first-child {
+  border-top: 0;
+}
+
+.customLegendSection h3,
+.customLegendServiceName,
+.customLegendHeading {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.customLegendSection h3 {
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.customLegendServiceName {
+  margin-top: 9px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.customLegendHeading {
+  margin-top: 9px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.ndviLegendScale {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  grid-template-rows: 1fr 1fr;
+  column-gap: 8px;
+  width: 100%;
+  height: 74px;
+  margin-top: 7px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.ndviLegendGradient {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 20px;
+  height: 74px;
+  background: linear-gradient(to bottom, #00d34d 0%, #55e57f 45%, #dff8e5 100%);
+}
+
+.ndviLegendMaximum {
+  align-self: start;
+  padding-top: 1px;
+}
+
+.ndviLegendMinimum {
+  align-self: end;
+  padding-bottom: 1px;
+}
+
+.categoryLegendRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.categoryLegendSwatch {
+  width: 18px;
+  height: 18px;
+}
+
+.greenCoverageZero {
+  background: #c7c7c7;
+}
+
+.greenCoverageOne {
+  background: #35b829;
+}
+
 .popupTable {
   width: 100%;
   border-collapse: collapse;
