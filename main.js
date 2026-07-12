@@ -132,12 +132,16 @@ require([
   let sceneView = null;
   let savedViewpoint = null;
   let currentWidgets = [];
+  let scaleBarWidget = null;
   let isSwitchingView = false;
 
   const switch2DButton = document.getElementById("switch2D");
   const switch3DButton = document.getElementById("switch3D");
   const layerControls = document.getElementById("layerControls");
   const viewStatus = document.getElementById("viewStatus");
+  const panelToggleButton = document.getElementById("panelToggle");
+  const panelToggleIcon = document.getElementById("panelToggleIcon");
+  const scaleBarHost = document.getElementById("scaleBarHost");
 
   initializeLayers();
   initializeLayerControls();
@@ -146,6 +150,9 @@ require([
 
   switch2DButton.addEventListener("click", switchTo2D);
   switch3DButton.addEventListener("click", switchTo3D);
+  panelToggleButton.addEventListener("click", () => {
+    setPanelCollapsed(!document.body.classList.contains("panel-collapsed"));
+  });
 
   function watchOpenStreetMapLoad() {
     openStreetMapLayer.when(() => {
@@ -597,6 +604,13 @@ require([
 
     currentWidgets = [];
 
+    if (scaleBarWidget) {
+      scaleBarWidget.destroy();
+      scaleBarWidget = null;
+    }
+    scaleBarHost.replaceChildren();
+    scaleBarHost.hidden = true;
+
     // Preserve the shared map and layer state before destroying the old view.
     currentView.container = null;
     currentView.map = null;
@@ -617,6 +631,8 @@ require([
     view.ui.empty("top-right");
     view.ui.empty("bottom-left");
     view.ui.empty("bottom-right");
+    scaleBarHost.replaceChildren();
+    scaleBarHost.hidden = true;
 
     const home = new Home({ view: view });
     const fullscreen = new Fullscreen({ view: view });
@@ -629,24 +645,39 @@ require([
       expandTooltip: "顯示圖例"
     });
 
-    view.ui.add([home, fullscreen], "top-right");
-    view.ui.add(legendExpand, "bottom-right");
+    view.ui.add([home, fullscreen], "top-left");
+    view.ui.add(legendExpand, "bottom-left");
 
     currentWidgets = [home, fullscreen, legend, legendExpand];
 
     if (mode === "3d") {
       const compass = new Compass({ view: view });
-      view.ui.add(compass, "top-right");
+      view.ui.add(compass, "top-left");
       currentWidgets.push(compass);
     }
 
     if (mode === "2d") {
-      const scaleBar = new ScaleBar({
+      const scaleBarContainer = document.createElement("div");
+      scaleBarHost.appendChild(scaleBarContainer);
+      scaleBarWidget = new ScaleBar({
         view: view,
-        unit: "metric"
+        unit: "metric",
+        container: scaleBarContainer
       });
-      view.ui.add(scaleBar, "bottom-left");
-      currentWidgets.push(scaleBar);
+      scaleBarHost.hidden = false;
+      currentWidgets.push(scaleBarWidget);
+    }
+  }
+
+  function setPanelCollapsed(isCollapsed) {
+    document.body.classList.toggle("panel-collapsed", isCollapsed);
+    panelToggleButton.setAttribute("aria-expanded", String(!isCollapsed));
+    panelToggleButton.title = isCollapsed ? "展開圖層控制面板" : "收合圖層控制面板";
+    panelToggleIcon.textContent = isCollapsed ? "‹" : "›";
+
+    const accessibleLabel = panelToggleButton.querySelector(".srOnly");
+    if (accessibleLabel) {
+      accessibleLabel.textContent = panelToggleButton.title;
     }
   }
 
