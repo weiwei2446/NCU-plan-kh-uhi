@@ -70,8 +70,7 @@ require([
       purpose: "顯示熱島強弱連續分布",
       url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/kaohsiung_heat_island/MapServer",
       visible: false,
-      opacity: 0.65,
-      hideLegendSublayerTitle: true
+      opacity: 0.65
     },
     {
       id: "ndvi",
@@ -236,15 +235,22 @@ require([
 
   function watchLayerLoad(layer, config) {
     layer.when(() => {
-      if (config.hideLegendSublayerTitle && layer.sublayers) {
-        layer.sublayers.forEach((sublayer) => {
-          // Preserve the ArcGIS legend while hiding the service's internal layer name.
-          sublayer.title = "\u200B";
-        });
+      if (layer.sublayers) {
+        hideLegendSublayerTitles(layer.sublayers);
       }
       console.log(`${layer.title} 載入成功`);
     }).catch((error) => {
       console.error(`${layer.title} 載入失敗`, error);
+    });
+  }
+
+  function hideLegendSublayerTitles(sublayers) {
+    sublayers.forEach((sublayer) => {
+      // Keep ArcGIS-rendered symbols and labels, but omit internal service names.
+      sublayer.title = "\u200B";
+      if (sublayer.sublayers) {
+        hideLegendSublayerTitles(sublayer.sublayers);
+      }
     });
   }
 
