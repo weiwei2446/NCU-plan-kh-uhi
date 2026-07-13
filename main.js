@@ -70,7 +70,8 @@ require([
       purpose: "顯示熱島強弱連續分布",
       url: "https://tiles.arcgis.com/tiles/pWOzKKRuqCsyMitB/arcgis/rest/services/kaohsiung_heat_island/MapServer",
       visible: false,
-      opacity: 0.65
+      opacity: 0.65,
+      hideLegendSublayerTitle: true
     },
     {
       id: "ndvi",
@@ -133,6 +134,7 @@ require([
   let savedViewpoint = null;
   let currentWidgets = [];
   let scaleBarWidget = null;
+  let legendTitleObserver = null;
   let isSwitchingView = false;
 
   const switch2DButton = document.getElementById("switch2D");
@@ -234,6 +236,12 @@ require([
 
   function watchLayerLoad(layer, config) {
     layer.when(() => {
+      if (config.hideLegendSublayerTitle && layer.sublayers) {
+        layer.sublayers.forEach((sublayer) => {
+          // Preserve the ArcGIS legend while hiding the service's internal layer name.
+          sublayer.title = "\u200B";
+        });
+      }
       console.log(`${layer.title} 載入成功`);
     }).catch((error) => {
       console.error(`${layer.title} 載入失敗`, error);
@@ -611,6 +619,11 @@ require([
     scaleBarHost.replaceChildren();
     scaleBarHost.hidden = true;
 
+    if (legendTitleObserver) {
+      legendTitleObserver.disconnect();
+      legendTitleObserver = null;
+    }
+
     // Preserve the shared map and layer state before destroying the old view.
     currentView.container = null;
     currentView.map = null;
@@ -647,6 +660,7 @@ require([
 
     view.ui.add([home, fullscreen], "top-left");
     view.ui.add(legendExpand, "bottom-left");
+    observeHiddenLegendTitles(view.container);
 
     currentWidgets = [home, fullscreen, legend, legendExpand];
 
@@ -667,6 +681,23 @@ require([
       scaleBarHost.hidden = false;
       currentWidgets.push(scaleBarWidget);
     }
+  }
+
+  function observeHiddenLegendTitles(viewContainer) {
+    const hideBlankCaptions = () => {
+      viewContainer.querySelectorAll(".esri-legend__layer-caption").forEach((caption) => {
+        const isHiddenTitle = caption.textContent.replace(/\u200B/g, "").trim() === "";
+        caption.style.display = isHiddenTitle ? "none" : "";
+      });
+    };
+
+    legendTitleObserver = new MutationObserver(hideBlankCaptions);
+    legendTitleObserver.observe(viewContainer, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+    hideBlankCaptions();
   }
 
   function setPanelCollapsed(isCollapsed) {
