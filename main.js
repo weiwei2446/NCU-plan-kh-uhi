@@ -695,6 +695,7 @@ require([
         const isHiddenTitle = caption.textContent.replace(/\u200B/g, "").trim() === "";
         caption.style.display = isHiddenTitle ? "none" : "";
       });
+      formatNativeContinuousRampLegends(viewContainer);
     };
 
     legendTitleObserver = new MutationObserver(hideBlankCaptions);
@@ -704,6 +705,38 @@ require([
       characterData: true
     });
     hideBlankCaptions();
+  }
+
+  function formatNativeContinuousRampLegends(viewContainer) {
+    viewContainer.querySelectorAll(".esri-legend__layer-row").forEach((row) => {
+      const symbol = row.querySelector("img.esri-legend__symbol");
+      const labelCell = row.querySelector(".esri-legend__layer-cell--info");
+
+      if (!symbol || !labelCell || labelCell.dataset.rampLabelsFormatted === "true") {
+        return;
+      }
+
+      const symbolHeight = Number(symbol.getAttribute("height")) || symbol.naturalHeight;
+      const originalLabel = labelCell.textContent.trim();
+      const labelParts = originalLabel.match(/^(.*?)\s+-\s+(-?\d+(?:\.\d+)?)$/);
+
+      if (symbolHeight < 40 || !labelParts) {
+        return;
+      }
+
+      const topLabel = document.createElement("span");
+      topLabel.className = "nativeLegendRampTop";
+      topLabel.textContent = labelParts[1].trim();
+
+      const bottomLabel = document.createElement("span");
+      bottomLabel.className = "nativeLegendRampBottom";
+      bottomLabel.textContent = labelParts[2].trim();
+
+      labelCell.dataset.rampLabelsFormatted = "true";
+      labelCell.classList.add("nativeLegendRampLabels");
+      labelCell.setAttribute("aria-label", originalLabel);
+      labelCell.replaceChildren(topLabel, bottomLabel);
+    });
   }
 
   function setPanelCollapsed(isCollapsed) {
