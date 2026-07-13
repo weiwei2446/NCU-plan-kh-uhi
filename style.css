@@ -273,6 +273,29 @@ body.panel-collapsed #scaleBarHost {
   font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
 }
 
+.esri-legend__layer-cell--info.nativeLegendRampLabels {
+  position: relative;
+  min-width: 120px;
+  vertical-align: top;
+}
+
+.nativeLegendRampTop,
+.nativeLegendRampBottom {
+  position: absolute;
+  right: 0;
+  left: 7px;
+  display: block;
+  line-height: 1.35;
+}
+
+.nativeLegendRampTop {
+  top: 4px;
+}
+
+.nativeLegendRampBottom {
+  bottom: 4px;
+}
+
 .popupTable {
   width: 100%;
   border-collapse: collapse;
