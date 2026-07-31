@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="瀏覽臺灣本島 2025 年夏季地表溫度、相對熱異常、NDVI 與植物覆蓋率圖層。"
+    />
+    <meta name="theme-color" content="#0f5f68" />
+    <meta property="og:title" content="臺灣熱環境與綠覆蓋圖台" />
+    <meta
+      property="og:description"
+      content="自由套疊台灣本島 19 縣市的 Landsat 熱環境與綠覆蓋圖層。"
+    />
+    <meta property="og:type" content="website" />
+    <title>臺灣熱環境與綠覆蓋圖台</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIINfQ3ynhjsCkeAaFjMZVnANoujo7+T7kzQ="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div id="root">
+      <div class="app-shell">
+        <header class="site-header">
+          <div class="brand-block">
+            <div class="brand-mark" aria-hidden="true">
+              <span class="brand-ring brand-ring-one"></span>
+              <span class="brand-ring brand-ring-two"></span>
+              <span class="brand-island"></span>
+            </div>
+            <div>
+              <div class="eyebrow">LANDSAT · TAIWAN MAIN ISLAND</div>
+              <h1>臺灣熱環境與綠覆蓋圖台</h1>
+            </div>
+          </div>
+          <div class="header-actions">
+            <div class="data-status">
+              <span class="status-dot"></span>
+              114 個公開影像圖層
+            </div>
+            <button type="button" class="header-button" data-action="about">
+              <span aria-hidden="true">ⓘ</span>
+              <span>資料說明</span>
+            </button>
+          </div>
+        </header>
+
+        <main class="workspace panel-is-open" id="workspace">
+          <section class="map-section">
+            <div class="map-frame">
+              <div
+                id="map"
+                class="map-canvas"
+                role="region"
+                aria-label="臺灣本島互動地圖；可縮放、平移並套疊分析圖層"
+              ></div>
+
+              <div class="map-utility-stack" aria-label="地圖快速工具">
+                <button
+                  type="button"
+                  class="map-icon-button"
+                  data-action="fit-taiwan"
+                  title="回到台灣本島全景"
+                  aria-label="回到台灣本島全景"
+                >
+                  <span aria-hidden="true">⌂</span>
+                </button>
+                <button
+                  type="button"
+                  class="map-icon-button"
+                  data-action="fit-region"
+                  title="回到目前行政區"
+                  aria-label="回到目前行政區"
+                >
+                  <span aria-hidden="true">◎</span>
+                </button>
+              </div>
+
+              <div class="north-arrow" role="img" aria-label="北方指示">
+                <span class="north-letter">N</span>
+                <span class="north-pointer"></span>
+              </div>
+
+              <div class="map-status-pill" role="status" id="map-status">
+                <span class="status-dot"></span>
+                <span id="map-status-text">正在連線公開圖磚…</span>
+              </div>
+            </div>
+
+            <div class="map-top-tools">
+              <div class="mode-pill">
+                <span aria-hidden="true">▱</span>
+                2D 平面
+              </div>
+              <label class="basemap-control">
+                <span>底圖</span>
+                <select id="basemap-select" aria-label="選擇底圖"></select>
+              </label>
+            </div>
+
+            <button
+              type="button"
+              class="panel-toggle is-open"
+              id="panel-toggle"
+              data-action="toggle-panel"
+              aria-controls="layer-panel"
+              aria-expanded="true"
+              aria-label="收合圖層面板"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+          </section>
+
+          <aside
+            class="layer-panel is-open"
+            id="layer-panel"
+            aria-label="圖層控制面板"
+          ></aside>
+        </main>
+
+        <div class="modal-backdrop" id="about-modal" hidden>
+          <section
+            class="about-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="about-title"
+          >
+            <button
+              type="button"
+              class="modal-close"
+              data-action="close-about"
+              aria-label="關閉資料說明"
+            >
+              ×
+            </button>
+            <span class="modal-icon" aria-hidden="true">▦</span>
+            <p class="panel-kicker">ABOUT THE DATA</p>
+            <h2 id="about-title">關於這張地圖</h2>
+            <p>
+              本網站使用 19 個台灣本島縣市、共 114 個公開 ArcGIS Online
+              Hosted Tile Layers，呈現 2025 年夏季 Landsat
+              地表溫度、相對熱異常與綠覆蓋成果。
+            </p>
+            <div class="about-grid">
+              <div>
+                <strong>空間解析度</strong>
+                <span>30 公尺</span>
+              </div>
+              <div>
+                <strong>影像日期</strong>
+                <span>2025/06/01–09/30</span>
+              </div>
+              <div>
+                <strong>公開項目</strong>
+                <span>114 Raster + 1 縣市界</span>
+              </div>
+              <div>
+                <strong>涵蓋範圍</strong>
+                <span>台灣本島 19 縣市</span>
+              </div>
+            </div>
+            <div class="about-note">
+              空間覆蓋完整不等於無雲。QA 遮罩及原始 Surface Temperature
+              缺值保留為透明 NoData；FVC 為遙測估算，並非地面實測。
+            </div>
+            <a
+              href="https://www.usgs.gov/landsat-missions/landsat-collection-2"
+              target="_blank"
+              rel="noreferrer"
+              class="learn-more"
+            >
+              USGS Landsat Collection 2
+              <span aria-hidden="true">↗</span>
+            </a>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <noscript>本互動地圖需要啟用 JavaScript。</noscript>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
