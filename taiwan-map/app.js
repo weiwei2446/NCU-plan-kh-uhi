@@ -1,6 +1,10 @@
 (() => {
   "use strict";
 
+  const DATA_RELEASE = "gf3_20260803";
+  const TILE_CACHE_RELEASE = "gf3_20260803_lod8_13_r2";
+  const GAPFILL_METHOD =
+    "既有雲／雲影缺口以三組完整補充時期（2025-06-27/28、08-06/07、09-15/16）的有效觀測按像元取平均；有 3／2／1 筆即平均 3／2／1 筆。地表溫度、相對熱異常與 NDVI 依此更新，FVC 與兩種分級圖由更新後的連續成果重新建立；水體、原始非雲缺值及三期仍無有效觀測保持透明。";
   const ARCGIS_ORG_KEY = "pWOzKKRuqCsyMitB";
   const TILE_SERVICE_ROOT =
     `https://tiles.arcgis.com/tiles/${ARCGIS_ORG_KEY}/arcgis/rest/services`;
@@ -234,7 +238,7 @@
   function tileUrl(countySlug, layer) {
     return (
       `${TILE_SERVICE_ROOT}/${serviceName(countySlug, layer)}` +
-      "/MapServer/tile/{z}/{y}/{x}"
+      `/MapServer/tile/{z}/{y}/{x}?v=${encodeURIComponent(TILE_CACHE_RELEASE)}`
     );
   }
 
@@ -257,7 +261,7 @@
             .join("")}
           <div class="legend-nodata">
             <span class="nodata-swatch"></span>
-            NoData／雲遮罩：透明
+            水體／原始非雲缺值／三期仍無有效觀測：透明
           </div>
         </div>`;
     }
@@ -272,7 +276,7 @@
         </div>
         <div class="legend-nodata">
           <span class="nodata-swatch"></span>
-          NoData／雲遮罩：透明
+          水體／原始非雲缺值／三期仍無有效觀測：透明
         </div>
       </div>`;
   }
@@ -535,7 +539,7 @@
                     <strong>資料來源與範圍</strong>
                     <p>
                       USGS Landsat 8–9 Collection 2 Level-2，2025/06–09；
-                      僅呈現台灣本島，雲、雲影、水體與原始缺值維持透明。
+                      僅呈現台灣本島。${escapeHtml(GAPFILL_METHOD)}
                     </p>
                   </div>
                 </div>
