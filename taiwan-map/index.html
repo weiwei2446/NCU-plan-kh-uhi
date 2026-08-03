@@ -160,8 +160,10 @@
               </div>
             </div>
             <div class="about-note">
-              空間覆蓋完整不等於無雲。QA 遮罩及原始 Surface Temperature
-              缺值保留為透明 NoData；FVC 為遙測估算，並非地面實測。
+              既有雲／雲影缺口以三組完整補充時期（2025-06-27/28、08-06/07、09-15/16）的有效觀測按像元取平均；有
+              3／2／1 筆即平均 3／2／1 筆。地表溫度、相對熱異常與 NDVI
+              依此更新，FVC 與兩種分級圖由更新後的連續成果重新建立；水體、原始非雲缺值及三期仍無有效觀測保持透明。FVC
+              為遙測估算，並非地面實測。
             </div>
             <a
               href="https://www.usgs.gov/landsat-missions/landsat-collection-2"
@@ -179,6 +181,6 @@
 
     <noscript>本互動地圖需要啟用 JavaScript。</noscript>
     <script src="./vendor/leaflet.js"></script>
-    <script src="./app.js"></script>
+    <script src="./app.js?v=gf3_20260803_lod8_13_r2"></script>
   </body>
 </html>
