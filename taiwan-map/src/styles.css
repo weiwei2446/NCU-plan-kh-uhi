@@ -1088,6 +1088,7 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   border-top: 1px solid var(--line);
   color: #82949b;
   background: #f7fafa;
@@ -1100,6 +1101,29 @@ a:focus-visible {
   gap: 7px;
   font-size: 10px;
   font-weight: 800;
+}
+
+.panel-footer-status {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.panel-footer-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+}
+
+.panel-footer .panel-minimize-button {
+  color: #176d78;
+  background: #e4f2ef;
+  box-shadow: inset 0 0 0 1px rgba(23, 109, 120, 0.1);
+}
+
+.panel-footer .panel-minimize-button span {
+  font-size: 13px;
+  line-height: 1;
 }
 
 .panel-footer > span .status-dot {

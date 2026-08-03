@@ -568,7 +568,7 @@
       </div>
 
       <div class="panel-footer">
-        <span class="${state.boundaryReady ? "ready" : ""}">
+        <span class="panel-footer-status ${state.boundaryReady ? "ready" : ""}">
           <span class="status-dot"></span>
           ${
             state.boundaryReady
@@ -578,10 +578,18 @@
                 : "縣市界連線中"
           }
         </span>
-        <button
-          type="button"
-          data-action="${state.boundaryError ? "reload-page" : "reset"}"
-        >↻ ${state.boundaryError ? "重試連線" : "重設"}</button>
+        <div class="panel-footer-actions">
+          <button
+            type="button"
+            class="panel-minimize-button"
+            data-action="toggle-panel"
+            aria-label="縮小圖層面板"
+          ><span aria-hidden="true">—</span> 縮小</button>
+          <button
+            type="button"
+            data-action="${state.boundaryError ? "reload-page" : "reset"}"
+          >↻ ${state.boundaryError ? "重試連線" : "重設"}</button>
+        </div>
       </div>`;
   }
 
